@@ -44,6 +44,7 @@ public class Main implements KeyListener {
     public void keyReleased(KeyEvent e) {
         //state.move('r');
         //state.move('u');
+        state.printState();
     }
 
     @Override

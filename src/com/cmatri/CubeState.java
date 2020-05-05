@@ -39,12 +39,12 @@ public class CubeState {
     public static final char B = 'b';
     public static final char O = 'o';
 
-    public static final Integer[] R_TRANS = {0, 13, 2, 15, 4, 1, 6, 3, 8, 5, 10, 7, 12, 9, 14, 11, 16, 17, 18, 19, 21, 23, 22, 20}; // inter layer interaction not working.
-    public static final Integer[] L_TRANS = {12, 1, 14, 3, 0, 5, 2, 7, 4, 9, 6, 11, 8, 13, 10, 15, 17, 19, 18, 16, 20, 21, 22, 23};
-    public static final Integer[] F_TRANS = {0, 1, 20, 22, 5, 7, 6, 4, 17, 19, 10, 11, 12, 13, 14, 15, 16, 3, 18, 2, 9, 21, 8, 23};
-    public static final Integer[] B_TRANS = {18, 16, 2, 3, 4, 5, 6, 7, 8, 9, 23, 21, 14, 12, 15, 13, 10, 17, 11, 19, 20, 0, 22, 1};
-    public static final Integer[] U_TRANS = {1, 3, 0, 2, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 21, 20, 15, 14, 18, 19, 4, 5, 22, 23};
-    public static final Integer[] D_TRANS = {0, 1, 2, 3, 4, 5, 23, 21, 9, 11, 8, 10, 18, 16, 14, 15, 6, 17, 7, 19, 20, 12, 22, 13};
+    public static final Integer[] R_TRANS = {0, 13, 2, 15, 4, 1, 6, 3, 8, 5, 10, 7, 12, 9, 14, 11, 16, 17, 18, 19, 21, 23, 22, 20}; // works
+    public static final Integer[] L_TRANS = {4, 1, 6, 3, 8, 5, 10, 7, 12, 9, 14, 11, 0, 13, 2, 15, 17, 19, 16, 18, 20, 21, 22, 23}; // works
+    public static final Integer[] F_TRANS = {0, 1, 20, 22, 5, 7, 6, 4, 17, 19, 10, 11, 12, 13, 14, 15, 16, 3, 18, 2, 9, 21, 8, 23}; // works
+    public static final Integer[] B_TRANS = {18, 16, 2, 3, 4, 5, 6, 7, 8, 9, 23, 21, 14, 12, 15, 13, 10, 17, 11, 19, 20, 0, 22, 1}; // works
+    public static final Integer[] U_TRANS = {1, 3, 0, 2, 16, 15, 6, 7, 8, 9, 10, 11, 12, 13, 20, 22, 15, 14, 18, 19, 4, 5, 22, 23}; // dw
+    public static final Integer[] D_TRANS = {0, 1, 2, 3, 4, 5, 23, 21, 9, 11, 8, 10, 18, 16, 14, 15, 6, 17, 7, 19, 20, 12, 22, 13}; // dw
 
     private Map<Character, Integer[]> permMap = new HashMap<Character, Integer[]>() {{
         put('u', U_TRANS);
@@ -89,6 +89,7 @@ public class CubeState {
             buf[perm[i]] = state[i];
         }
         state = buf;
+        validateState();
         uiUpdateHandle.accept(state);
     }
 
@@ -99,6 +100,7 @@ public class CubeState {
         for (int i = 0; i < state.length; i++) {
             buf[i] = state[perm[i]];
         }
+        validateState();
         state = buf;
     }
 
@@ -117,6 +119,37 @@ public class CubeState {
         printSide(bottom, false, true);
         printSide(back, false, true);
     }
+
+    private void validateState() {
+        int r = 0, o = 0, w = 0, y = 0, g = 0, b = 0;
+        for(int i = 0; i < state.length; i++) {
+            switch(state[i]) {
+                case 'w':
+                    w++;
+                    break;
+                case 'y':
+                    y++;
+                    break;
+                case 'g':
+                    g++;
+                    break;
+                case 'b':
+                    b++;
+                    break;
+                case 'r':
+                    r++;
+                    break;
+                case 'o':
+                    o++;
+                    break;
+            }
+        }
+        if(!(r == 4 && o == 4 && y == 4 && w == 4 && g == 4 && b == 4)) {
+            System.err.println("Invalid state.");
+            System.exit(0);
+        };
+    }
+
 
     private char[] getSideValues(int... offsets) {
         StringBuilder ret = new StringBuilder();
