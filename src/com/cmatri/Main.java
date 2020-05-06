@@ -29,6 +29,9 @@ public class Main implements KeyListener {
         frame.setVisible(true);
 
         state.setSolved();
+
+        state.algorithm("F R");
+        new CubeSolver().solveCube(state);
     }
 
     public static void main(String[] args) {
@@ -38,12 +41,11 @@ public class Main implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
-        //state.move(e.getKeyChar());
+//        state.move(e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        state.algorithm("RUUruRur");
         //state.move('r');
         //state.move('u');
         //state.printState();

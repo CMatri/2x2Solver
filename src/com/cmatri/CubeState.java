@@ -1,26 +1,5 @@
 package com.cmatri;
 
-/*
-    #####
-    #0 1#
-    # W #
-    #3 2#
-#############
-#4 5#8 9#12 #
-# O # G # R #
-#7 6# 10# 14#
-#############
-    #16 #
-    # Y #
-    # 18#
-    #####
-    #23 #
-    # B #
-    # 20#
-    #####
-
- */
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +17,12 @@ public class CubeState {
 
         private char[] merge(char[]... vals) {
             StringBuilder ret = new StringBuilder();
-            ret.append(u); ret.append(l); ret.append(f);
-            ret.append(r); ret.append(d); ret.append(b);
+            ret.append(u);
+            ret.append(l);
+            ret.append(f);
+            ret.append(r);
+            ret.append(d);
+            ret.append(b);
             return ret.toString().toCharArray();
         }
 
@@ -64,15 +47,39 @@ public class CubeState {
     public static final char B = 'b';
     public static final char O = 'o';
 
-    public static final Integer[] Rp_TRANS = {0,9,10,3,4,5,6,7,8,17,18,11,15,12,13,14,16,23,20,19,2,21,22,1}; // new
+/*
+    #####
+    #0 1#
+    # W #
+    #3 2#
+#############
+#4 5#8 9#12 #
+# O # G # R #
+#7 6# 10# 14#
+#############
+    #16 #
+    # Y #
+    # 18#
+    #####
+    # 23#
+    # B #
+    # 20#
+    #####
+
+ */
+
+    public static final Integer[] Rp_TRANS = {0, 9, 10, 3, 4, 5, 6, 7, 8, 17, 18, 11, 15, 12, 13, 14, 16, 23, 20, 19, 2, 21, 22, 1}; // new
     public static final Integer[] R_TRANS = invertPerm(Rp_TRANS); // new
-    public static final Integer[] L_TRANS = {4, 1, 6, 3, 8, 5, 10, 7, 12, 9, 14, 11, 0, 13, 2, 15, 17, 19, 16, 18, 20, 21, 22, 23};
-    public static final Integer[] Fp_TRANS = {0,1,5,6,4,16,17,7,11,8,9,10,3,13,14,2,15,12,18,19,20,21,22,23}; // new
+    public static final Integer[] L_TRANS = {8, 1, 2, 11, 5, 6, 7, 4, 16, 9, 10, 19, 12, 13, 14, 15, 22, 17, 18, 21, 20, 3, 0, 23}; // new
+    public static final Integer[] Lp_TRANS = invertPerm(L_TRANS); // new
+    public static final Integer[] Fp_TRANS = {0, 1, 5, 6, 4, 16, 17, 7, 11, 8, 9, 10, 3, 13, 14, 2, 15, 12, 18, 19, 20, 21, 22, 23}; // new
     public static final Integer[] F_TRANS = invertPerm(Fp_TRANS); // new
-    public static final Integer[] B_TRANS = {18, 16, 2, 3, 4, 5, 6, 7, 8, 9, 23, 21, 14, 12, 15, 13, 10, 17, 11, 19, 20, 0, 22, 1};
-    public static final Integer[] Up_TRANS = {3,0,1,2,8,9,6,7,12,13,10,11,20,21,14,15,16,17,18,19,4,5,22,23}; // new
+    public static final Integer[] B_TRANS = {13, 14, 2, 3, 1, 5, 6, 0, 8, 9, 10, 11, 12, 18, 19, 15, 16, 17, 7, 4, 21, 22, 23, 20}; // new
+    public static final Integer[] Bp_TRANS = invertPerm(B_TRANS); // new
+    public static final Integer[] Up_TRANS = {3, 0, 1, 2, 8, 9, 6, 7, 12, 13, 10, 11, 20, 21, 14, 15, 16, 17, 18, 19, 4, 5, 22, 23}; // new
     public static final Integer[] U_TRANS = invertPerm(Up_TRANS); // new
-    public static final Integer[] D_TRANS = {0, 1, 2, 3, 4, 5, 23, 21, 9, 11, 8, 10, 18, 16, 14, 15, 6, 17, 7, 19, 20, 12, 22, 13};
+    public static final Integer[] D_TRANS = {0, 1, 2, 3, 4, 5, 22, 23, 8, 9, 6, 7, 12, 13, 10, 11, 19, 16, 17, 18, 20, 21, 15, 14}; // new
+    public static final Integer[] Dp_TRANS = invertPerm(D_TRANS); // new
 
     private Map<Character, Integer[]> permMap = new HashMap<Character, Integer[]>() {{
         put('U', U_TRANS);
@@ -82,14 +89,14 @@ public class CubeState {
         put('R', R_TRANS);
         put('L', L_TRANS);
         put('u', Up_TRANS);
-        put('d', null);
+        put('d', Dp_TRANS);
         put('f', Fp_TRANS);
-        put('b', null);
+        put('b', Bp_TRANS);
         put('r', Rp_TRANS);
-        put('l', null);
+        put('l', Lp_TRANS);
     }};
 
-    private static final char[] solvedState = {W, W, W, W, O, O, O, O, G, G, G, G, R, R, R, R, Y, Y, Y, Y, B, B, B, B};
+    public static final char[] solvedState = {W, W, W, W, O, O, O, O, G, G, G, G, R, R, R, R, Y, Y, Y, Y, B, B, B, B};
     public static final int L_OFFSET = 4;
     public static final int R_OFFSET = 12;
     public static final int U_OFFSET = 0;
@@ -107,18 +114,14 @@ public class CubeState {
         return this.state;
     }
 
-    public void algorithm(char[] alg) {
-        for (char c : alg) move(c);
-    }
-
-    public void algorithm(String alg) {
-        for (int i = 0; i < alg.length(); i++) move(alg.charAt(i));
+    public void setState(char[] state) {
+        this.state = state;
     }
 
     public static Integer[] invertPerm(Integer[] perm) {
         int n = perm.length;
         Integer[] g = new Integer[n];
-        for (int i = 1; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             g[perm[i]] = i;
         }
         return g;
@@ -163,7 +166,7 @@ public class CubeState {
 
     private void changeState(char[] newState) {
         this.state = newState;
-        uiUpdateHandle.accept(state);
+        //uiUpdateHandle.accept(state);
     }
 
     private void validateState() {
@@ -214,7 +217,7 @@ public class CubeState {
 
     private char[] getSideValues(int... offsets) {
         StringBuilder ret = new StringBuilder();
-        for(int offset : offsets)
+        for (int offset : offsets)
             ret.append(getSideValues(offset, state));
         return ret.toString().toCharArray();
     }
@@ -237,5 +240,82 @@ public class CubeState {
                     "#" + data[2] + " " + data[3] + "#" + data[6] + " " + data[7] + "#" + data[10] + " " + data[11] + "#\n" +
                     (bottom ? "#############" : ""));
         }
+    }
+
+    private void algorithm(char[] alg) {
+        for (char c : alg) move(c);
+    }
+
+    public void algorithm(String alg) {
+        String[] split = alg.split(" ");
+        ArrayList<Character> ops = new ArrayList<>();
+        for (int i = 0; i < split.length; i++) {
+            String s = split[i];
+            switch (s) {
+                case "R":
+                    ops.add('R');
+                    break;
+                case "R'":
+                    ops.add('r');
+                    break;
+                case "R2":
+                    ops.add('R');
+                    ops.add('R');
+                    break;
+                case "L":
+                    ops.add('L');
+                    break;
+                case "L'":
+                    ops.add('l');
+                    break;
+                case "L2":
+                    ops.add('L');
+                    ops.add('L');
+                    break;
+                case "F":
+                    ops.add('F');
+                    break;
+                case "F'":
+                    ops.add('f');
+                    break;
+                case "F2":
+                    ops.add('F');
+                    ops.add('F');
+                    break;
+                case "B":
+                    ops.add('B');
+                    break;
+                case "B'":
+                    ops.add('b');
+                    break;
+                case "B2":
+                    ops.add('B');
+                    ops.add('B');
+                    break;
+                case "U":
+                    ops.add('U');
+                    break;
+                case "U'":
+                    ops.add('u');
+                    break;
+                case "U2":
+                    ops.add('U');
+                    ops.add('U');
+                    break;
+                case "D":
+                    ops.add('D');
+                    break;
+                case "D'":
+                    ops.add('d');
+                    break;
+                case "D2":
+                    ops.add('D');
+                    ops.add('D');
+                    break;
+            }
+        }
+        char[] ret = new char[ops.size()];
+        for (int i = 0; i < ret.length; i++) ret[i] = ops.get(i);
+        algorithm(ret);
     }
 }
