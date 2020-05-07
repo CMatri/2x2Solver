@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 public class CubeState {
     private char[] state;
     private Consumer<char[]> uiUpdateHandle;
+    private boolean updateUI = true;
 
     public static class SideValues {
         public char[] l, r, u, d, f, b;
@@ -78,8 +79,8 @@ public class CubeState {
     public static final Integer[] Bp_TRANS = invertPerm(B_TRANS); // new
     public static final Integer[] Up_TRANS = {3, 0, 1, 2, 8, 9, 6, 7, 12, 13, 10, 11, 20, 21, 14, 15, 16, 17, 18, 19, 4, 5, 22, 23}; // new
     public static final Integer[] U_TRANS = invertPerm(Up_TRANS); // new
-    public static final Integer[] D_TRANS = {0, 1, 2, 3, 4, 5, 22, 23, 8, 9, 6, 7, 12, 13, 10, 11, 19, 16, 17, 18, 20, 21, 15, 14}; // new
-    public static final Integer[] Dp_TRANS = invertPerm(D_TRANS); // new
+    public static final Integer[] Dp_TRANS = {0, 1, 2, 3, 4, 5, 22, 23, 8, 9, 6, 7, 12, 13, 10, 11, 19, 16, 17, 18, 20, 21, 15, 14}; // new
+    public static final Integer[] D_TRANS = invertPerm(Dp_TRANS); // new
 
     private Map<Character, Integer[]> permMap = new HashMap<Character, Integer[]>() {{
         put('U', U_TRANS);
@@ -166,7 +167,7 @@ public class CubeState {
 
     private void changeState(char[] newState) {
         this.state = newState;
-        //uiUpdateHandle.accept(state);
+        if(updateUI) uiUpdateHandle.accept(state);
     }
 
     private void validateState() {
@@ -231,13 +232,13 @@ public class CubeState {
             System.out.println((top ? "\t#####\n" : "") +
                     "\t#" + data[0] + " " + data[1] + "#\n" +
                     "\t#   #\n" +
-                    "\t#" + data[2] + " " + data[3] + "#" + (bottom ? "\n" : "") +
+                    "\t#" + data[3] + " " + data[2] + "#" + (bottom ? "\n" : "") +
                     (bottom ? "\t#####\n" : ""));
         } else {
             System.out.println((top ? "#############\n" : "") +
                     "#" + data[0] + " " + data[1] + "#" + data[4] + " " + data[5] + "#" + data[8] + " " + data[9] + "#\n" +
                     "#   #   #   #\n" +
-                    "#" + data[2] + " " + data[3] + "#" + data[6] + " " + data[7] + "#" + data[10] + " " + data[11] + "#\n" +
+                    "#" + data[3] + " " + data[2] + "#" + data[7] + " " + data[6] + "#" + data[11] + " " + data[10] + "#\n" +
                     (bottom ? "#############" : ""));
         }
     }
@@ -251,71 +252,35 @@ public class CubeState {
         ArrayList<Character> ops = new ArrayList<>();
         for (int i = 0; i < split.length; i++) {
             String s = split[i];
-            switch (s) {
-                case "R":
-                    ops.add('R');
-                    break;
-                case "R'":
-                    ops.add('r');
-                    break;
-                case "R2":
-                    ops.add('R');
-                    ops.add('R');
-                    break;
-                case "L":
-                    ops.add('L');
-                    break;
-                case "L'":
-                    ops.add('l');
-                    break;
-                case "L2":
-                    ops.add('L');
-                    ops.add('L');
-                    break;
-                case "F":
-                    ops.add('F');
-                    break;
-                case "F'":
-                    ops.add('f');
-                    break;
-                case "F2":
-                    ops.add('F');
-                    ops.add('F');
-                    break;
-                case "B":
-                    ops.add('B');
-                    break;
-                case "B'":
-                    ops.add('b');
-                    break;
-                case "B2":
-                    ops.add('B');
-                    ops.add('B');
-                    break;
-                case "U":
-                    ops.add('U');
-                    break;
-                case "U'":
-                    ops.add('u');
-                    break;
-                case "U2":
-                    ops.add('U');
-                    ops.add('U');
-                    break;
-                case "D":
-                    ops.add('D');
-                    break;
-                case "D'":
-                    ops.add('d');
-                    break;
-                case "D2":
-                    ops.add('D');
-                    ops.add('D');
-                    break;
-            }
+            if (s.contains("'")) ops.add(Character.toLowerCase(s.charAt(0)));
+            else if (s.length() == 2) {
+                ops.add(s.charAt(0));
+                ops.add(s.charAt(0));
+            } else ops.add(s.charAt(0));
         }
         char[] ret = new char[ops.size()];
-        for (int i = 0; i < ret.length; i++) ret[i] = ops.get(i);
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = ops.get(i);
+        }
         algorithm(ret);
+    }
+
+    public static String decodeMoves(String m) {
+        String ret = "";
+        for(int i = 0; i < m.length(); i++) {
+            char c = m.charAt(i);
+            boolean p = Character.isLowerCase(c);
+            ret += Character.toUpperCase(c);
+            if(i != m.length() - 1 && m.charAt(i + 1) == c) {
+                i++;
+                ret += "2";
+            } else if(p) ret += "'";
+            if(i != m.length() - 1) ret += " ";
+        }
+        return ret;
+    }
+
+    public void setUpdateUI(boolean updateUI) {
+        this.updateUI = updateUI;
     }
 }

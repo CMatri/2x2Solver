@@ -5,8 +5,12 @@ import com.cmatri.gui.SolverUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import static com.cmatri.CubeState.decodeMoves;
 
 public class Main implements KeyListener {
 
@@ -19,19 +23,39 @@ public class Main implements KeyListener {
 
         JFrame frame = new JFrame("SolverUI");
         frame.setPreferredSize(new Dimension(1000, 550));
-        frame.setContentPane(new SolverUI().background);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addKeyListener(this);
         frame.setFocusable(true);
         frame.setFocusTraversalKeysEnabled(true);
         frame.setContentPane(renderer);
+
+        JLabel scrambleLabel = new JLabel("Enter scramble: ");
+        JTextField scrambleInput = new JTextField("F' U2 F U F' U2 F' U2 R'", 15);
+        JButton scrambleButton = new JButton("Scramble");
+        JButton solveButton = new JButton("Solve");
+        renderer.add(scrambleLabel);
+        renderer.add(scrambleInput);
+        renderer.add(scrambleButton);
+        renderer.add(solveButton);
+        scrambleLabel.setBounds(400, 200, 100, 20);
+        scrambleInput.setBounds(495, 200, 200, 20);
+        scrambleButton.setBounds(400, 225, 100, 30);
+        scrambleButton.addActionListener(e -> {
+            String scramble = scrambleInput.getText();
+            System.out.println("Scramble: " + scramble);
+            state.algorithm(scramble);
+        });
+        solveButton.setBounds(500, 225, 100, 30);
+        solveButton.addActionListener(e -> {
+            state.setUpdateUI(false);
+            String solution = decodeMoves(CubeSolver.solveCube(state));
+            System.out.println("Solution: " + solution);
+            state.setUpdateUI(true);
+            state.algorithm(solution);
+        });
+
         frame.pack();
         frame.setVisible(true);
-
-        state.setSolved();
-
-        state.algorithm("F R");
-        new CubeSolver().solveCube(state);
     }
 
     public static void main(String[] args) {
@@ -41,14 +65,11 @@ public class Main implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
-//        state.move(e.getKeyChar());
+        state.move(e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //state.move('r');
-        //state.move('u');
-        //state.printState();
     }
 
     @Override
