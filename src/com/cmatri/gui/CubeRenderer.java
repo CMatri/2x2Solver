@@ -35,7 +35,7 @@ public class CubeRenderer extends JPanel {
     private char[] state;
     private Side[] cubies;
     private Deque<char[]> animQueue;
-    private long updateDelay = 50;
+    private int updateDelay = 100;
 
     private Map<Character, Color> colorMap = new HashMap<Character, Color>() {{
         put('w', Color.white);
@@ -60,8 +60,8 @@ public class CubeRenderer extends JPanel {
                 new Side('b', faceSize * 2, 4 * faceSize),//b
         };
 
-        Timer updateTimer = new Timer(30, e -> {
-            if(!animQueue.isEmpty()) {
+        Timer updateTimer = new Timer(updateDelay, e -> {
+            if (!animQueue.isEmpty()) {
                 this.state = animQueue.poll();
                 repaint();
             }
@@ -85,7 +85,13 @@ public class CubeRenderer extends JPanel {
         cubies[2].update(Arrays.copyOfRange(vals, CubeState.F_OFFSET, CubeState.F_OFFSET + 4));
         cubies[3].update(Arrays.copyOfRange(vals, CubeState.R_OFFSET, CubeState.R_OFFSET + 4));
         cubies[4].update(Arrays.copyOfRange(vals, CubeState.D_OFFSET, CubeState.D_OFFSET + 4));
-        cubies[5].update(Arrays.copyOfRange(vals, CubeState.B_OFFSET, CubeState.B_OFFSET + 4));
+        char[] bVals = Arrays.copyOfRange(vals, CubeState.B_OFFSET, CubeState.B_OFFSET + 4);
+        char[] buf = bVals.clone();
+        bVals[0] = buf[2];
+        bVals[1] = buf[3];
+        bVals[2] = buf[0];
+        bVals[3] = buf[1];
+        cubies[5].update(bVals);
         for (int i = 0; i < cubies.length; i++) cubies[i].draw(g, faceSize / 2);
     }
 

@@ -39,17 +39,19 @@ public class Main implements KeyListener {
         renderer.add(solveButton);
         scrambleLabel.setBounds(400, 200, 100, 20);
         scrambleInput.setBounds(495, 200, 200, 20);
-        scrambleButton.setBounds(400, 225, 100, 30);
+        scrambleButton.setBounds(420, 225, 110, 25);
         scrambleButton.addActionListener(e -> {
             String scramble = scrambleInput.getText();
             System.out.println("Scramble: " + scramble);
             state.algorithm(scramble);
         });
-        solveButton.setBounds(500, 225, 100, 30);
+        solveButton.setBounds(540, 225, 110, 25);
         solveButton.addActionListener(e -> {
             state.setUpdateUI(false);
             String solution = decodeMoves(CubeSolver.solveCube(state));
             System.out.println("Solution: " + solution);
+            state.setSolved();
+            state.algorithm(scrambleInput.getText());
             state.setUpdateUI(true);
             state.algorithm(solution);
         });
