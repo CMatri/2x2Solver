@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 
 import static com.cmatri.CubeState.decodeMoves;
 
@@ -33,22 +34,34 @@ public class Main implements KeyListener {
         JTextField scrambleInput = new JTextField("F' U2 F U F' U2 F' U2 R'", 15);
         JButton scrambleButton = new JButton("Scramble");
         JButton solveButton = new JButton("Solve");
+
         renderer.add(scrambleLabel);
         renderer.add(scrambleInput);
         renderer.add(scrambleButton);
         renderer.add(solveButton);
+
         scrambleLabel.setBounds(400, 200, 100, 20);
         scrambleInput.setBounds(495, 200, 200, 20);
         scrambleButton.setBounds(420, 225, 110, 25);
         scrambleButton.addActionListener(e -> {
-            String scramble = scrambleInput.getText();
+            String scramble = scrambleInput.getText().toUpperCase();
+            if(scramble.contains("L") || scramble.contains("D") || scramble.contains("B")) {
+                JOptionPane.showMessageDialog(null, "Not a WCA scramble.", "No", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             System.out.println("Scramble: " + scramble);
+            state.setSolved();
             state.algorithm(scramble);
         });
+
         solveButton.setBounds(540, 225, 110, 25);
         solveButton.addActionListener(e -> {
             state.setUpdateUI(false);
-            String solution = decodeMoves(CubeSolver.solveCube(state));
+            long start = System.currentTimeMillis();
+            String solution = CubeSolver.solveCube(state);
+            System.out.println("Search took " + (System.currentTimeMillis() - start) + "ms.");
+            solution = decodeMoves(solution);
             System.out.println("Solution: " + solution);
             state.setSolved();
             state.algorithm(scrambleInput.getText());

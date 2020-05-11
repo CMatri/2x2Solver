@@ -35,7 +35,7 @@ public class CubeRenderer extends JPanel {
     private char[] state;
     private Side[] cubies;
     private Deque<char[]> animQueue;
-    private int updateDelay = 100;
+    private int updateDelay = 30;
 
     private Map<Character, Color> colorMap = new HashMap<Character, Color>() {{
         put('w', Color.white);

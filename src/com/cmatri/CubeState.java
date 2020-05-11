@@ -67,6 +67,9 @@ public class CubeState {
     # 20#
     #####
 
+    WWWWGGGGRRRRBBBBYYYYOOOO
+    WWWWRRRRBBBBOOOOYYYYGGGG
+    WWWWBBBBOOOOGGGGYYYYRRRR
  */
 
     public static final Integer[] Rp_TRANS = {0, 9, 10, 3, 4, 5, 6, 7, 8, 17, 18, 11, 15, 12, 13, 14, 16, 23, 20, 19, 2, 21, 22, 1}; // new

@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CubeSolver {
-    private static final char[] permutations = {'R', 'r', 'U', 'u', 'F', 'f', 'D', 'd', 'L', 'l', 'B', 'b'};
+    private static final char[] permutations = {'R', 'r', 'U', 'u', 'F', 'f'};//, 'D', 'd', 'L', 'l', 'B', 'b'};
 
     private static String findPath(HashMap<String, Integer> moves, CubeState state) {
         StringBuilder path = new StringBuilder();
@@ -44,14 +44,6 @@ public class CubeSolver {
                     movesForward.put(s, i);
                     forward.add(s);
                 }
-
-                if (movesBackward.containsKey(s)) { // found path
-                    String f = findPath(movesForward, state);
-                    state.setState(s.toCharArray());
-                    String b = findPath(movesBackward, state);
-                    state.setState(s.toCharArray());
-                    return invert(b) + f;
-                }
             }
 
             start = backward.remove();
@@ -62,6 +54,13 @@ public class CubeSolver {
                 if (!movesBackward.containsKey(s)) {
                     movesBackward.put(s, i);
                     backward.add(s);
+                }
+                if (movesForward.containsKey(s)) { // found path
+                    String f = findPath(movesForward, state);
+                    state.setState(s.toCharArray());
+                    String b = findPath(movesBackward, state);
+                    state.setState(s.toCharArray());
+                    return invert(b) + f;
                 }
             }
         }
